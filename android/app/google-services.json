@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "352668972994",
+    "project_id": "apppromotor-d7ea8",
+    "storage_bucket": "apppromotor-d7ea8.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:352668972994:android:8eb1b4a0b17a54c31e885b",
+        "android_client_info": {
+          "package_name": "com.example.apppromotor"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCLcjHKcgsfjT356Mq9EyvuRfKmm5Ab4hw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
