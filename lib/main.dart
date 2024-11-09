@@ -9,15 +9,14 @@ import 'package:flutter/material.dart';
 void main ()async {
   WidgetsFlutterBinding.ensureInitialized();
   
- 
    await Firebase.initializeApp(
   options: DefaultFirebaseOptions.currentPlatform,
 );
  runApp(const AppPromotor());
 
   FirebaseFirestore firestore = FirebaseFirestore.instance;
-  firestore.collection("Só para testar").doc("Estou testando").set({
-    "funcionou?": true,
+  firestore.collection("Só para testar!").doc("Estou testando!").set({
+    "funcionou!": true,
     });
 }
 
