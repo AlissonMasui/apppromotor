@@ -7,7 +7,7 @@ class CadastraPromotor extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(title: Text('CadastraPromotor'),),
+         appBar: AppBar(title: Text('CadastraPromotor'),),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(
