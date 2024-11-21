@@ -78,15 +78,13 @@ class _ControleKmState extends State<ControleKm> {
                             },
                           title:Row(
                             children: [
-                              const Text("Registro Kilometragem :",style: TextStyle(fontSize: 24.0)),
-                              Text( kmControleM.idKmControle , style: const TextStyle(fontSize: 24.0) ),
+                              const Text("KmInicial :",style: TextStyle(fontSize: 24.0)),
+                              Text( kmControleM.kmInicial , style: const TextStyle(fontSize: 24.0) ),
                             ],
                           ),
                           subtitle: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween ,
                             children: [
-                            Text( kmControleM.idKmControle , style: const TextStyle(fontSize: 16.0),),
-                            Text( kmControleM.data, style: const TextStyle(fontSize: 16.0),),
                             Text( kmControleM.destino  , style: const TextStyle(fontSize: 16.0),),
                             
                           

@@ -78,14 +78,13 @@ class _DiarioCampoState extends State<DiarioCampo> {
                           title:Row(
                             children: [
                               const Text("Diario:",style: TextStyle(fontSize: 24.0)),
-                              Text( diarioM.id_diario , style: const TextStyle(fontSize: 24.0) ),
+                              Text( diarioM.titulo , style: const TextStyle(fontSize: 24.0) ),
                             ],
                           ),
                           subtitle: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween ,
                             children: [
                             Text( diarioM.id_revenda , style: const TextStyle(fontSize: 16.0),),
-                            Text( diarioM.titulo, style: const TextStyle(fontSize: 16.0),),
                             Text( diarioM.data   , style: const TextStyle(fontSize: 16.0),),
                             
                           

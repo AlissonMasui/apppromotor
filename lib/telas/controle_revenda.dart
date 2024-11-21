@@ -77,18 +77,16 @@ class _ControleRevendaState extends State<ControleRevenda> {
                             },
                           title:Row(
                             children: [
-                              const Text("Registro de Revenda :",style: TextStyle(fontSize: 24.0)),
-                              Text( revendaControleM.id_revenda , style: const TextStyle(fontSize: 24.0) ),
+                              const Text("Revenda :",style: TextStyle(fontSize: 24.0)),
+                              Text( revendaControleM.nome , style: const TextStyle(fontSize: 24.0) ),
                             ],
                           ),
                           subtitle: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween ,
                             children: [
-                            Text( revendaControleM.nome , style: const TextStyle(fontSize: 16.0),),
                             Text( revendaControleM.nomeDonoGerente, style: const TextStyle(fontSize: 16.0),),
                             Text( revendaControleM.foneDonoGerente  , style: const TextStyle(fontSize: 16.0),),
                             
-                          
                                               ],
                                         ),
                                         

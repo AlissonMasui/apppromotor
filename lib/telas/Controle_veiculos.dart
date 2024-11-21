@@ -76,16 +76,14 @@ class _ControleVeiculosState extends State<ControleVeiculos> {
                             },
                           title:Row(
                             children: [
-                              const Text("Registro Km :",style: TextStyle(fontSize: 24.0)),
-                              Text( veiculoM.idVeiculo , style: const TextStyle(fontSize: 24.0) ),
+                              const Text("Veiculo :",style: TextStyle(fontSize: 24.0)),
+                              Text( veiculoM.modelo , style: const TextStyle(fontSize: 24.0) ),
                             ],
                           ),
                           subtitle: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween ,
                             children: [
                             Text( veiculoM.placa , style: const TextStyle(fontSize: 16.0),),
-                            Text( veiculoM.marca, style: const TextStyle(fontSize: 16.0),),
-                            Text( veiculoM.modelo   , style: const TextStyle(fontSize: 16.0),),
                             Text(veiculoM.kmAtual, style: const TextStyle(fontSize: 16.0),)
                           
                                               ],

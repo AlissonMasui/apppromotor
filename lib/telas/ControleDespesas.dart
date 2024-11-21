@@ -76,21 +76,16 @@ Widget build(BuildContext context) {
                             },
                           title:Row(
                             children: [
-                              const Text("Registro despesa: :",style: TextStyle(fontSize: 24.0)),
-                              Text( despesaControleM.idDespesa , style: const TextStyle(fontSize: 24.0) ),
+                              const Text("NF :",style: TextStyle(fontSize: 24.0)),
+                              Text( despesaControleM.numeroNf , style: const TextStyle(fontSize: 24.0) ),
                             ],
                           ),
                           subtitle: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween ,
                             children: [
-                            
-                            Text( despesaControleM.numeroNf, style: const TextStyle(fontSize: 16.0),),
                             Text( despesaControleM.oQue, style: const TextStyle(fontSize: 16.0),),
                             Text( despesaControleM.quando, style: const TextStyle(fontSize: 16.0),),
-                            Text( despesaControleM.onde, style: const TextStyle(fontSize: 16.0),),
                             Text( despesaControleM.preco, style: const TextStyle(fontSize: 16.0),),
-                            Text( despesaControleM.placa, style: const TextStyle(fontSize: 16.0),),
-                            Text( despesaControleM.km, style: const TextStyle(fontSize: 16.0),),
                                                      
                                               ],
                                         ),
