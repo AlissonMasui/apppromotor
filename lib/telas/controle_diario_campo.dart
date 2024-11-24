@@ -1,12 +1,10 @@
 import '../../model/Modelo_diario_campo.dart';
-import '../../model/modelo_km_controle.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
 
 class DiarioCampo extends StatefulWidget {
   const DiarioCampo({super.key});
-
   @override
   State<DiarioCampo> createState() => _DiarioCampoState();
 }
