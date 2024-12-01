@@ -1,5 +1,4 @@
-import '../telas/HomePage.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import '../telas/home_Page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
@@ -14,10 +13,10 @@ void main ()async {
 );
  runApp(const AppPromotor());
 
-  FirebaseFirestore firestore = FirebaseFirestore.instance;
-  firestore.collection("Só para testar!").doc("Estou testando!").set({
-    "funcionou!": true,
-    });
+  //FirebaseFirestore firestore = FirebaseFirestore.instance;
+  // firestore.collection("Só para testar!").doc("Estou testando!").set({
+  //   "funcionou!": true,
+  //   });
 }
 
 class AppPromotor extends StatelessWidget {

@@ -1,7 +1,14 @@
+import 'package:brasil_fields/brasil_fields.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
+
 import '../../model/modelo_despesa.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
+
+import '../model/modelo_veiculo.dart';
 
 class ControleDespesas extends StatefulWidget {
   const ControleDespesas({super.key});
@@ -11,15 +18,22 @@ class ControleDespesas extends StatefulWidget {
 }
 
 class _ControleDespesasState extends State<ControleDespesas> {
+  String uid = FirebaseAuth.instance.currentUser!.uid;
       List<Despesa> listDespesa = [];
       FirebaseFirestore db = FirebaseFirestore.instance;
-
+  ValueNotifier<List<Veiculo>> listVeiculos = ValueNotifier([]);
+      ValueNotifier<String> selected = ValueNotifier("");
+      //bool isLoading = false;
    @override
   void initState() {
-    refresh();
     super.initState();
-    
+    setState(() {
+     // isLoading = true;
+    });
+    buscaVeiculo();
+    refresh();
   }
+
 
 Widget build(BuildContext context) {
     return  Scaffold(
@@ -34,7 +48,11 @@ Widget build(BuildContext context) {
       
       ),
 
-      body: (listDespesa.isEmpty) 
+      body:
+      // isLoading // Verifica se está carregando
+      //     ? const Center(child: CircularProgressIndicator()) // Exibe o loading
+      //     :
+      (listDespesa.isEmpty)
         ? const Center(
              child: Text(
                 "Nenhuma Registro ainda.\nVamos criar o primeiro?",
@@ -114,28 +132,37 @@ Widget build(BuildContext context) {
 
   
   showFormModal({Despesa? model}) {
+    setState(() {
+     // isLoading = true; // Inicia o carregamento ao abrir o modal
+    });
+
+
     String labelTitle = " Registrar Despesa";
     String labelConfirmationButton = "Salvar";
     String labelSkipButton = "Cancelar";
-
+    TextEditingController idController = TextEditingController();
     TextEditingController numroNfController = TextEditingController();
     TextEditingController oQueController = TextEditingController();
     TextEditingController ondeController = TextEditingController();
     TextEditingController quandoController = TextEditingController();
+    quandoController.text = DateFormat('dd-MM-yyyy').format(DateTime.now());
+
     TextEditingController precoController = TextEditingController();
     TextEditingController kmController = TextEditingController();
-    TextEditingController placaController = TextEditingController();
-    TextEditingController id_imagemController = TextEditingController();
+    TextEditingController idVeiculoController = TextEditingController();
+    TextEditingController id_imagem_controller = TextEditingController();
 
     if(model !=null){
       labelTitle = "Editando despesa";
+      idController.text = model.idDespesa;
       numroNfController.text = model.numeroNf;
       oQueController.text = model.oQue;
-      quandoController.text = model.onde;
-      precoController.text = model.quando;
-      kmController.text = model.preco;
-      placaController.text = model.km;
-      id_imagemController.text = model.idImagem;
+      quandoController.text = model.quando;
+      ondeController.text =  model.onde;
+      precoController.text = model.preco;
+      kmController.text = model.km ;
+      idVeiculoController.text = model.id_veiculo;
+      id_imagem_controller.text = model.idImagem;
    }
    showModalBottomSheet(
       context: context,
@@ -156,9 +183,14 @@ Widget build(BuildContext context) {
             children: [
               Text(labelTitle),
               TextFormField(
+
+                keyboardType: TextInputType.number,
                 controller: numroNfController,
                 decoration:
-                    const InputDecoration(label: Text("Numero Nota fiscal:")),
+                    const InputDecoration(
+                      label: Text("Numero Nota fiscal:"),
+
+                    ),
               ),
               TextFormField(
                 controller: oQueController,
@@ -168,29 +200,100 @@ Widget build(BuildContext context) {
                 controller: ondeController,
                 decoration:
                     const InputDecoration(label: Text("Onde:")),
-              ),TextFormField(
-                controller: quandoController,
-                decoration:
-                    const InputDecoration(label: Text("Quando:")),
               ),
+              TextField(
+
+                controller: quandoController,
+                decoration: const InputDecoration(
+                  label: Text("Quando"),
+                  filled: true,
+                  prefixIcon: Icon(Icons.calendar_today),
+                ),
+                onTap: () async {
+                  DateTime? pickedDate = await showDatePicker(
+                      context: context,
+                      initialDate: DateTime.now(),
+                      firstDate: DateTime(2000),
+                      lastDate: DateTime(2100));
+
+                  if (pickedDate != null) {
+                    setState(() {
+                      quandoController.text =
+                          DateFormat('dd-MM-yyyy').format(pickedDate);
+                    });
+                  }
+                },
+              ),
+
               TextFormField(
+                inputFormatters: [
+                  // obrigatório
+                  FilteringTextInputFormatter.digitsOnly,
+                  CentavosInputFormatter()
+                ],
+                keyboardType: TextInputType.number,
                 controller: precoController,
                 decoration:
                     const InputDecoration(label: Text("Preço:")),
               ),
               
               TextFormField(
+                keyboardType: TextInputType.number,
                 controller: kmController,
                 decoration:
                     const InputDecoration(label: Text("Km")),
               ),
-              TextFormField(
-                controller: placaController,
-                decoration:
-                    const InputDecoration(label: Text("Placa")),
-              ),
-              const SizedBox(
-                height: 16,
+              // TextFormField(
+              //   controller: placaController,
+              //   decoration:
+              //       const InputDecoration(label: Text("Placa")),
+              // ),
+              // const SizedBox(
+              //   height: 16,
+              // ),
+
+              ValueListenableBuilder<List<Veiculo>>(
+                valueListenable: listVeiculos,
+                builder: (context, veiculos, ___) {
+                  if (veiculos.isEmpty) {
+                    return Container();
+                  }
+                  return ValueListenableBuilder(
+                    valueListenable: selected,
+                    builder: (context, selectedValue, _) {
+                      return Container(
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            color: Colors.grey, // Cor da borda
+                            width: 1.0, // Espessura da borda
+                          ),
+                          borderRadius:
+                          BorderRadius.circular(8.0), // Bordas arredondadas
+                        ),
+                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                        child: DropdownButton<String>(
+                          value: idVeiculoController.text.isEmpty
+                              ? null
+                              : idVeiculoController.text,
+                          hint: const Text('Selecione o Veículo'),
+                          isExpanded: true,
+                          underline: const SizedBox(),
+                          // Remove a linha padrão
+                          items: veiculos.map((Veiculo veiculo) {
+                            return DropdownMenuItem<String>(
+                              value: veiculo.idVeiculo,
+                              child: Text(veiculo.modelo+'Placa: '+veiculo.placa),
+                            );
+                          }).toList(),
+                          onChanged: (String? novoValor) {
+                            idVeiculoController.text = novoValor ?? '';
+                            selected.value = novoValor ?? '';
+                          },
+                        ),
+                      );
+                    },
+                  );
+                },
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
@@ -198,6 +301,9 @@ Widget build(BuildContext context) {
                   TextButton(
                     onPressed: () {
                       Navigator.pop(context);
+                      setState(() {
+                        //isLoading = false;
+                      });
                     },
                     child: Text(labelSkipButton),
                   ),
@@ -214,18 +320,26 @@ Widget build(BuildContext context) {
                         quando: quandoController.text, 
                         preco: precoController.text, 
                         km: kmController.text, 
-                        placa: placaController.text, 
-                        idImagem: id_imagemController.text
+                        id_veiculo: idVeiculoController.text,
+                        idImagem: id_imagem_controller.text
                         );
                           
                           if(model != null){
                                 newNfcontrole.idDespesa = model.idDespesa;
                           }
-
-                          db.collection('despesa').doc(newNfcontrole.idDespesa).set(newNfcontrole.toMap());
+                     setState(() {
+                      // isLoading = true;
+                     });
+                          db.collection('usuario/$uid/despesa').doc(newNfcontrole.idDespesa).set(newNfcontrole.tpasteloMap());
                         refresh();
+                     setState(() {
+                     //  isLoading = false;
+                     });
                         Navigator.pop(context);
-                    },
+                     setState(() {
+                       //isLoading = false;
+                     });
+                        },
                    child: Text(labelConfirmationButton),
                   
                       ),
@@ -237,7 +351,9 @@ Widget build(BuildContext context) {
       },
     );
 
-
+    setState(() {
+     // isLoading = false;
+    });
 
 
   }
@@ -245,18 +361,29 @@ Widget build(BuildContext context) {
       List<Despesa> temp = [];
 
       QuerySnapshot<Map<String, dynamic>> snapshot = 
-      await db.collection("despesa").get();
+      await db.collection('usuario/$uid/despesa').get();
 
       for (var doc in snapshot.docs){
         temp.add(Despesa.fromMap(doc.data()));
       }
- setState(() {
-      listDespesa = temp;
-    });
-
+      setState(() {
+        listDespesa = temp;
+       // isLoading = false;
+      });
   }
-  
+
+  buscaVeiculo() async {
+    List<Veiculo> veiculos = [];
+    QuerySnapshot<Map<String, dynamic>> snapshot =
+    await db.collection('usuario/$uid/veiculo').get();
+
+    for (var doc in snapshot.docs) {
+      veiculos.add(Veiculo.fromMap(doc.data()));
+    }
+    listVeiculos.value = veiculos;
+  }
+
   remove(Despesa despesaM){
-    db.collection("despesa").doc(despesaM.idDespesa).delete();
+    db.collection('usuario/$uid/despesa').doc(despesaM.idDespesa).delete();
   }
 }

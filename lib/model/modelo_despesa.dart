@@ -10,8 +10,8 @@ class Despesa {
     String quando;
     String preco;
     String km;
-    String placa;
-    String idImagem;
+    String? idVeiculo;
+    //String idImagem;
 
 
     Despesa({
@@ -22,8 +22,7 @@ class Despesa {
      required this.quando,
      required this.preco,
      required this.km,
-     required this.placa,
-     required this.idImagem,  
+     required this.idVeiculo,
     }
       );
 
@@ -37,8 +36,7 @@ class Despesa {
       'quando': quando,
       'preco': preco,
       'km': km,
-      'placa': placa,
-      'id_imagem': idImagem,
+      'idVeiculo': idVeiculo,
     };
   }
 
@@ -51,8 +49,7 @@ class Despesa {
       quando: map['quando'] as String,
       preco: map['preco'] as String,
       km: map['km'] as String,
-      placa: map['placa'] as String,
-      idImagem: map['id_imagem'] as String,
+      idVeiculo: map.containsKey('id_veiculo')? map['id_veiculo'] : '',
     );
   }
 
@@ -60,8 +57,4 @@ class Despesa {
 
   factory Despesa.fromJson(String source) => Despesa.fromMap(json.decode(source) as Map<String, dynamic>);
 
-  @override
-  String toString() {
-    return 'Despesa(id_despesa: $idDespesa, numeroNf: $numeroNf, oQue: $oQue, onde: $onde, quando: $quando, preco: $preco, km: $km, placa: $placa, id_imagem: $idImagem)';
-  }
 }

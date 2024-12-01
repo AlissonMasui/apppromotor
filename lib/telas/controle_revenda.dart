@@ -1,8 +1,13 @@
-import '../../model/modelo_km_controle.dart';
-import '../../model/modelo_revenda.dart';
+import 'package:brasil_fields/brasil_fields.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
+
+import '../../model/modeloRevenda.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
+
 
 class ControleRevenda extends StatefulWidget {
   const ControleRevenda({super.key});
@@ -12,14 +17,18 @@ class ControleRevenda extends StatefulWidget {
 }
 
 class _ControleRevendaState extends State<ControleRevenda> {
-  List<Revenda> listRevenda =[];
+  String uid = FirebaseAuth.instance.currentUser!.uid;
+    List<Revenda> listRevenda =[];
    FirebaseFirestore db = FirebaseFirestore.instance;
 
-   @override
+
+  @override
   void initState() {
     refresh();
     super.initState();
-  }
+
+
+   }
 
   @override
   Widget build(BuildContext context) {
@@ -160,39 +169,113 @@ class _ControleRevendaState extends State<ControleRevenda> {
                     const InputDecoration(label: Text("Nome da Revenda:")),
               ),
               TextFormField(
+                inputFormatters: [
+                  // obrigatório
+                  FilteringTextInputFormatter.digitsOnly,
+                  CnpjInputFormatter(),
+                ],
+                keyboardType: TextInputType.number,
                 controller: cnpjController,
                 decoration:
                     const InputDecoration(label: Text("CNPJ")),
-              ),TextFormField(
+              ),
+              TextFormField(
+                keyboardType: TextInputType.name,
                 controller: nomeDonoGerenteController,
                 decoration:
                     const InputDecoration(label: Text("Nome Dono/Gerente:")),
-              ),TextFormField(
+              ),
+              TextFormField(
+                inputFormatters: [
+                  // obrigatório
+                  FilteringTextInputFormatter.digitsOnly,
+                  TelefoneInputFormatter()
+                ],
+
+
+
+
+                keyboardType: TextInputType.phone,
                 controller: foneDonoGerenteController,
                 decoration:
                     const InputDecoration(label: Text("Fone dono/Gerente")),
               ),
-              TextFormField(
+              // TextFormField(
+              //   keyboardType: TextInputType.datetime,
+              //   controller: dataNacimentoDonoController,
+              //   decoration:
+              //       const InputDecoration(label: Text("Data nacimento Dono/Gerente:")),
+              // ),
+              TextField(
                 controller: dataNacimentoDonoController,
-                decoration:
-                    const InputDecoration(label: Text("Data nacimento Dono/Gerente:")),
+                decoration: const InputDecoration(
+                  label: Text("Selecione a Data de nacimanto"),
+                  filled: true,
+                  prefixIcon: Icon(Icons.calendar_today),
+                ),
+                onTap: () async {
+                  DateTime? pickedDate = await showDatePicker(
+                      context: context,
+                      initialDate: DateTime.now(),
+                      firstDate: DateTime(2000),
+                      lastDate: DateTime(2100));
+
+                  if (pickedDate != null) {
+                    setState(() {
+                      dataNacimentoDonoController.text =
+                          DateFormat('dd-MM-yyyy').format(pickedDate);
+                    });
+                  }
+                },
               ),
+
+
+
               TextFormField(
+              keyboardType: TextInputType.name,
                 controller: nomeCompradorController,
                 decoration:
                     const InputDecoration(label: Text("Nome Comprador")),
               ),
               TextFormField(
+                inputFormatters: [
+                  // obrigatório
+                  FilteringTextInputFormatter.digitsOnly,
+                  TelefoneInputFormatter()
+                ],
+                keyboardType: TextInputType.phone,
                 controller: foneCompradorController,
                 decoration:
                     const InputDecoration(label: Text("Fone Comprador:")),
               ),
-              TextFormField(
+              // TextFormField(
+              //   keyboardType: TextInputType.datetime,
+              //   controller: dataNacimentoCompradorController,
+              //   decoration:
+              //       const InputDecoration(label: Text("Data nacimento Comprador:")),
+              // ),
+              TextField(
                 controller: dataNacimentoCompradorController,
-                decoration:
-                    const InputDecoration(label: Text("Data nacimento Comprador:")),
-              ),
+                decoration: const InputDecoration(
+                  label: Text("Selecione a Data de nacimento"),
+                  filled: true,
+                  prefixIcon: Icon(Icons.calendar_today),
+                ),
+                onTap: () async {
+                  DateTime? pickedDate = await showDatePicker(
+                      context: context,
+                      initialDate: DateTime.now(),
+                      firstDate: DateTime(2000),
+                      lastDate: DateTime(2100));
 
+                  if (pickedDate != null) {
+                    setState(() {
+                      dataNacimentoCompradorController.text =
+                          DateFormat('dd-MM-yyyy').format(pickedDate);
+                    });
+                  }
+                },
+              ),
 
 
 
@@ -229,7 +312,7 @@ class _ControleRevendaState extends State<ControleRevenda> {
                                 newRevenda.id_revenda = model.id_revenda;
                           }
 
-                          db.collection('revenda').doc(newRevenda.id_revenda).set(newRevenda.toMap());
+                          db.collection('usuario/$uid/revenda').doc(newRevenda.id_revenda).set(newRevenda.toMap());
                         refresh();
                         Navigator.pop(context);
                     },
@@ -249,7 +332,7 @@ refresh() async {
       List<Revenda> temp = [];
 
       QuerySnapshot<Map<String, dynamic>> snapshot =
-       await db.collection("revenda").get();
+       await db.collection('usuario/$uid/revenda').get();
 
        for (var doc in snapshot.docs) {
           temp.add(Revenda.fromMap(doc.data()));
@@ -261,7 +344,7 @@ refresh() async {
 }
 
   void remove(Revenda revendaM) {
-    db.collection("revenda").doc(revendaM.id_revenda).delete();
+    db.collection("usuario/$uid/revenda").doc(revendaM.id_revenda).delete();
     refresh();
   }
 }

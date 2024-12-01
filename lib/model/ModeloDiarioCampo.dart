@@ -3,39 +3,39 @@ import 'dart:convert';
 
 class Diario {
 
-String id_diario;
+String idDiario;
 String titulo;
 String texto;
 String data;
-String id_revenda;
+String idRevenda;
 
 Diario({
-required this.id_diario,
+required this.idDiario,
   required this.titulo,
   required this.texto,
   required this.data,
-  required this.id_revenda
+  required this.idRevenda
 
 });
 
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
-      'Id_diario': id_diario,
+      'Id_diario': idDiario,
       'Titulo': titulo,
       'Text': texto,
       'Data': data,
-      'Id_revenda': id_revenda,
+      'Id_revenda': idRevenda,
     };
   }
 
   factory Diario.fromMap(Map<String, dynamic> map) {
     return Diario(
-      id_diario: map['Id_diario'] as String,
+      idDiario: map['Id_diario'] as String,
       titulo: map['Titulo'] as String,
       texto: map['Text'] as String,
       data: map['Data'] as String,
-      id_revenda: map['Id_revenda'] as String,
+      idRevenda: map['Id_revenda'] as String,
     );
   }
 
@@ -45,6 +45,6 @@ required this.id_diario,
 
   @override
   String toString() {
-    return 'Diario(Id_diario: $id_diario, Titulo: $titulo, Text: $texto, Data: $data, Id_revenda: $id_revenda)';
+    return 'Diario(Id_diario: $idDiario, Titulo: $titulo, Text: $texto, Data: $data, Id_revenda: $idRevenda)';
   }
 }

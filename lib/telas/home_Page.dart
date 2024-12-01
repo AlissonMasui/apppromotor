@@ -1,8 +1,10 @@
+import 'package:apppromotor/telas/controle_KM.dart';
+import 'package:apppromotor/telas/controle_despesas.dart';
+
 import '../Services/auth_service.dart';
 import '../authentication/components/show_senha_confirmacao_dialog.dart';
-import '../telas/ControleDespesas.dart';
-import '../telas/Controle_veiculos.dart';
-import '../telas/controle_KM.dart';
+
+import '../telas/controle_veiculos.dart';
 import '../telas/controle_acao_vendas.dart';
 import '../telas/controle_diario_campo.dart';
 import '../telas/controle_revenda.dart';
@@ -88,7 +90,7 @@ class _HomepageState extends State<Homepage> {
                 child: ElevatedButton(
                   child: const Text('Controle Despesas'),
                   onPressed: (){
-                    Navigator.of(context).push(MaterialPageRoute(builder: (context)=>ControleDespesas(),),);
+                    Navigator.of(context).push(MaterialPageRoute(builder: (context)=>ControleDespesa(),),);
                   },
                   
                   
@@ -102,7 +104,7 @@ class _HomepageState extends State<Homepage> {
                 child: ElevatedButton(
                   child: const Text('Diario de campo'),
                   onPressed: (){
-                    Navigator.of(context).push(MaterialPageRoute(builder: (context)=>DiarioCampo(),),);
+                    Navigator.of(context).push(MaterialPageRoute(builder: (context)=>DiarioDeCampo(),),);
                   },
                   
                   

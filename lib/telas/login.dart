@@ -1,7 +1,5 @@
 import '../Services/auth_service.dart';
 import '../authentication/components/show_snackbar.dart';
-import '../telas/HomePage.dart';
-import '../telas/cadastra_promotor.dart';
 import 'package:flutter/material.dart';
 
 class Login extends StatefulWidget {

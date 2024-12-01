@@ -23,7 +23,7 @@ class KmcontrolServices {
     return temp;
   }
 
-  Future<void> removerKmControle({required String KmControleId}) async {
-    return firestore.collection(uid).doc(KmControleId).delete();
+  Future<void> removerKmControle({required String kmControleId}) async {
+    return firestore.collection(uid).doc(kmControleId).delete();
   }
 }

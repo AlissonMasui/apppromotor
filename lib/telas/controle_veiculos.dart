@@ -1,7 +1,11 @@
-import '../../model/modelo_veiculo.dart';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
+
+import '../model/modelo_veiculo.dart';
+
 
 class ControleVeiculos extends StatefulWidget {
   const ControleVeiculos({super.key});
@@ -13,8 +17,9 @@ class ControleVeiculos extends StatefulWidget {
 class _ControleVeiculosState extends State<ControleVeiculos> {
   List<Veiculo> listVeiculo =[];
    FirebaseFirestore db = FirebaseFirestore.instance;
+  String uid = FirebaseAuth.instance.currentUser!.uid;
 
-   @override
+  @override
   void initState() {
     refresh();
     super.initState();
@@ -167,6 +172,7 @@ class _ControleVeiculosState extends State<ControleVeiculos> {
                     const InputDecoration(label: Text("Revisão:")),
               ),
               TextFormField(
+
                 controller: kmAtualController,
                 decoration:
                     const InputDecoration(label: Text("KmAtual")),
@@ -203,7 +209,7 @@ class _ControleVeiculosState extends State<ControleVeiculos> {
                                 newVeiculo.idVeiculo = model.idVeiculo;
                           }
 
-                          db.collection('veiculo').doc(newVeiculo.idVeiculo).set(newVeiculo.toMap());
+                          db.collection('usuario/$uid/veiculo').doc(newVeiculo.idVeiculo).set(newVeiculo.toMap());
                         refresh();
                         Navigator.pop(context);
                     },
@@ -223,7 +229,7 @@ refresh() async {
       List<Veiculo> temp = [];
 
       QuerySnapshot<Map<String, dynamic>> snapshot =
-       await db.collection("veiculo").get();
+       await db.collection('usuario/$uid/veiculo').get();
 
        for (var doc in snapshot.docs) {
           temp.add(Veiculo.fromMap(doc.data()));
@@ -235,7 +241,7 @@ refresh() async {
 }
 
   void remove(Veiculo model) {
-    db.collection("veiculo").doc(model.idVeiculo).delete();
+    db.collection('usuario/$uid/veiculo').doc(model.idVeiculo).delete();
     refresh();
   }
 }

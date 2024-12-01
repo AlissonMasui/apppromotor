@@ -1,7 +1,13 @@
+import 'package:brasil_fields/brasil_fields.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/services.dart';
+import 'package:geolocator/geolocator.dart';
 import '../../model/modelo_km_controle.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
+import 'package:intl/intl.dart';
+import '../model/modelo_veiculo.dart';
 
 class ControleKm extends StatefulWidget {
   const ControleKm({super.key});
@@ -11,132 +17,128 @@ class ControleKm extends StatefulWidget {
 }
 
 class _ControleKmState extends State<ControleKm> {
-  List<KmControle> listKmControle =[];
-   FirebaseFirestore db = FirebaseFirestore.instance;
+  String uid = FirebaseAuth.instance.currentUser!.uid;
+  String name = FirebaseAuth.instance.currentUser!.displayName!;
+  List<KmControle> listKmControle = [];
+  FirebaseFirestore db = FirebaseFirestore.instance;
+  ValueNotifier<Position?> posicaoAtual = ValueNotifier(null);
+  ValueNotifier<List<Veiculo>> listVeiculos = ValueNotifier([]);
+  ValueNotifier<String> selected = ValueNotifier("");
+  bool isLoading = false;
 
-
-   @override
+  @override
   void initState() {
-    refresh();
     super.initState();
+    setState(() {
+      isLoading = true;
+    });
+    getLocalidade();
+    buscaVeiculo();
+    refresh();
   }
-
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Controle kilometragem'),
-        ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: (){
-           // Navigator.of(context).push(MaterialPageRoute(builder: (context)=>RegistroKM(),),);
-        showFormModal();
-          },
-          child: const Icon(Icons.add),
-),
+      ),
+      floatingActionButton:FloatingActionButton(
+            onPressed: () {
+              showFormModal();
+            },
+            child: const Icon(Icons.add),
 
-        body: (listKmControle.isEmpty) 
-        ? const Center(
-             child: Text(
-                "Nenhuma Registro ainda.\nVamos criar o primeiro?",
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 18),
-              ),
-              )
+
+      ),
+      body: isLoading // Verifica se está carregando
+          ? const Center(child: CircularProgressIndicator()) // Exibe o loading
+          : (listKmControle.isEmpty)
+              ? const Center(
+                  child: Text(
+                    "Nenhuma Registro ainda.\nVamos criar o primeiro?",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 18),
+                  ),
+                )
               : RefreshIndicator(
-                onRefresh: (){
-                  return refresh();
-
-                },
-                child:ListView(
-                  children: List.generate(listKmControle.length, 
-                    (index){
-                     KmControle kmControleM = listKmControle[index];
-                      return 
-                        Card(
-                        child: Dismissible(
-                          key: ValueKey<KmControle>(kmControleM),
-                          direction: DismissDirection.endToStart,
-                          background: Container(
-                            alignment: Alignment.centerRight,
-                            padding: const EdgeInsets.only(right: 8.0),
-                            color: Colors.red,
+                  onRefresh: () {
+                    return refresh();
+                  },
+                  child: ListView(
+                    children: List.generate(listKmControle.length, (index) {
+                      KmControle kmControleM = listKmControle[index];
+                      return Card(
+                          child: Dismissible(
+                        key: ValueKey<KmControle>(kmControleM),
+                        direction: DismissDirection.endToStart,
+                        background: Container(
+                          alignment: Alignment.centerRight,
+                          padding: const EdgeInsets.only(right: 8.0),
+                          color: Colors.red,
                           child: const Icon(Icons.delete),
-                          ),
-                          onDismissed: (diretion){
-                            remove(kmControleM);
+                        ),
+                        onDismissed: (diretion) {
+                          remove(kmControleM);
+                        },
+                        child: ListTile(
+                          onTap: () {},
+                          onLongPress: () {
+                            showFormModal(model: kmControleM);
                           },
-                          child: ListTile(
-                            onTap: (){
-                              //print("Click");
-                            },
-                            onLongPress: (){
-                                showFormModal(model: kmControleM);
-                          
-                              //print("CLick e segurou");
-                            },
-                          title:Row(
+                          title: Row(
                             children: [
-                              const Text("KmInicial :",style: TextStyle(fontSize: 24.0)),
-                              Text( kmControleM.kmInicial , style: const TextStyle(fontSize: 24.0) ),
+                              const Text("KmInicial :",
+                                  style: TextStyle(fontSize: 24.0)),
+                              Text(kmControleM.kmInicial,
+                                  style: const TextStyle(fontSize: 24.0)),
                             ],
                           ),
                           subtitle: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween ,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                            Text( kmControleM.destino  , style: const TextStyle(fontSize: 16.0),),
-                            
-                          
-                                              ],
-                                        ),
-                                        
-                                      ),
-                        )
-          );
-        }
-
-        ),
-      
-      
-      ),
-      ),
-      );
+                              Text(kmControleM.destino,
+                                  style: const TextStyle(fontSize: 16.0)),
+                            ],
+                          ),
+                        ),
+                      ));
+                    }),
+                  ),
+                ),
+    );
   }
-  showFormModal({KmControle? model}){
-    
-    // Labels à serem mostradas no Modal
+
+  showFormModal({KmControle? model}) async {
+    setState(() {
+      isLoading = true; // Inicia o carregamento ao abrir o modal
+    });
+
     String labelTitle = "Registrar KM";
     String labelConfirmationButton = "Salvar";
     String labelSkipButton = "Cancelar";
-    
-    // Controlador do campo que receberá o nome do Campo
+
     TextEditingController kmInicialController = TextEditingController();
     TextEditingController idPromotorController = TextEditingController();
-    TextEditingController idVeiculoCOntroller = TextEditingController();
+    idPromotorController.text = name;
+    TextEditingController idVeiculoController = TextEditingController();
     TextEditingController destinoController = TextEditingController();
     TextEditingController dataController = TextEditingController();
+    dataController.text = DateFormat('dd-MM-yyyy').format(DateTime.now());
     TextEditingController posicaoController = TextEditingController();
-    
 
-
-   if(model !=null){
+    if (model != null) {
       labelTitle = "Editando Registro de controle de kilometragem";
       kmInicialController.text = model.kmInicial;
       idPromotorController.text = model.idPromotor;
-      idVeiculoCOntroller.text = model.idVeiculo;
+      idVeiculoController.text = model.idVeiculo;
       destinoController.text = model.destino;
       dataController.text = model.data;
       posicaoController.text = model.posicao;
+    }
 
-   }
-
-   
-   // Função do Flutter que mostra o modal na tela
-  showModalBottomSheet(
+    showModalBottomSheet(
       context: context,
-
-      // Define que as bordas verticais serão arredondadas
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(
           top: Radius.circular(24),
@@ -146,40 +148,108 @@ class _ControleKmState extends State<ControleKm> {
         return Container(
           height: MediaQuery.of(context).size.height,
           padding: const EdgeInsets.all(32.0),
-
-          // Formulário com Título, Campo e Botões
           child: ListView(
             children: [
               Text(labelTitle),
               TextFormField(
+                inputFormatters: [
+                  FilteringTextInputFormatter.digitsOnly,
+                  KmInputFormatter(),
+                ],
                 controller: kmInicialController,
-                decoration:
-                    const InputDecoration(label: Text("Km Inicial:")),
+                decoration: const InputDecoration(label: Text("Km Inicial:")),
               ),
               TextFormField(
                 controller: idPromotorController,
                 decoration:
                     const InputDecoration(label: Text("Promotor de vendas")),
-              ),TextFormField(
-                controller: idVeiculoCOntroller,
-                decoration:
-                    const InputDecoration(label: Text("Veiculo")),
-              ),TextFormField(
+              ),
+
+              ValueListenableBuilder<List<Veiculo>>(
+                valueListenable: listVeiculos,
+                builder: (context, veiculos, _) {
+                  if (veiculos.isEmpty) {
+                    return Container();
+                  }
+                  return ValueListenableBuilder(
+                    valueListenable: selected,
+                    builder: (context, selectedValue, _) {
+                      return Container(
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            color: Colors.grey, // Cor da borda
+                            width: 1.0, // Espessura da borda
+                          ),
+                          borderRadius:
+                              BorderRadius.circular(8.0), // Bordas arredondadas
+                        ),
+                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                        child: DropdownButton<String>(
+                          value: idVeiculoController.text.isEmpty
+                              ? null
+                              : idVeiculoController.text,
+                          hint: const Text('Selecione o Veículo'),
+                          isExpanded: true,
+                          underline: const SizedBox(),
+                          // Remove a linha padrão
+                          items: veiculos.map((Veiculo veiculo) {
+                            return DropdownMenuItem<String>(
+                              value: veiculo.idVeiculo,
+                              child: Text(veiculo.modelo+' Placa: '+veiculo.placa ),
+                            );
+                          }).toList(),
+                          onChanged: (String? novoValor) {
+                            idVeiculoController.text = novoValor ?? '';
+                            selected.value = novoValor ?? '';
+                          },
+                        ),
+                      );
+                    },
+                  );
+                },
+              ),
+              TextFormField(
                 controller: destinoController,
-                decoration:
-                    const InputDecoration(label: Text("Destino")),
+                decoration: const InputDecoration(label: Text("Destino")),
               ),
-              TextFormField(
+              TextField(
                 controller: dataController,
-                decoration:
-                    const InputDecoration(label: Text("Data")),
+                decoration: const InputDecoration(
+                  label: Text("Selecione a Data"),
+                  filled: true,
+                  prefixIcon: Icon(Icons.calendar_today),
+                ),
+                onTap: () async {
+                  DateTime? pickedDate = await showDatePicker(
+                      context: context,
+                      initialDate: DateTime.now(),
+                      firstDate: DateTime(2000),
+                      lastDate: DateTime(2100));
+
+                  if (pickedDate != null) {
+                    setState(() {
+                      dataController.text =
+                          DateFormat('dd-MM-yyyy').format(pickedDate);
+                    });
+                  }
+                },
               ),
-              TextFormField(
-                controller: posicaoController,
-                decoration:
-                    const InputDecoration(label: Text("Posição Gps")),
+              ValueListenableBuilder(
+                valueListenable: posicaoAtual,
+                builder: (context, value, ___) {
+                  if (value != null) {
+                    posicaoController.text =
+
+                        "latitude:${value.latitude} longitude: ${value.longitude}";
+                  }
+                  return TextFormField(
+                    controller: posicaoController,
+                    decoration: InputDecoration(
+                        label: Text(
+                            value != null ? "Posicao gps" : "Carregando..")),
+                  );
+                },
               ),
-              
               const SizedBox(
                 height: 16,
               ),
@@ -189,6 +259,9 @@ class _ControleKmState extends State<ControleKm> {
                   TextButton(
                     onPressed: () {
                       Navigator.pop(context);
+                      setState(() {
+                        isLoading = false;
+                      });
                     },
                     child: Text(labelSkipButton),
                   ),
@@ -197,53 +270,107 @@ class _ControleKmState extends State<ControleKm> {
                   ),
                   ElevatedButton(
                     onPressed: () {
-                      
-                    KmControle newKmControle = KmControle(idKmControle: Uuid().v1(), 
-                    kmInicial: kmInicialController.text, 
-                    idPromotor: idPromotorController.text, 
-                    idVeiculo: idVeiculoCOntroller.text, 
-                    destino: destinoController.text, 
-                    data: dataController.text, 
-                    posicao: posicaoController.text,
-                    );
-                          if(model != null){
-                                newKmControle.idKmControle = model.idKmControle;
-                          }
-                         db.collection('kmControle').doc(newKmControle.idKmControle).set(newKmControle.toMap());
+                      KmControle newKmControle = KmControle(
+                        idKmControle: Uuid().v1(),
+                        kmInicial: kmInicialController.text,
+                        idPromotor: uid,
+                        idVeiculo: idVeiculoController.text,
+                        destino: destinoController.text,
+                        data: dataController.text,
+                        posicao: posicaoController.text,
+                      );
+                      if (model != null) {
+                        newKmControle.idKmControle = model.idKmControle;
+                      }
+
+                      setState(() {
+                        isLoading = true;
+                      });
+
+                      db
+                          .collection('usuario/$uid/kmControle')
+                          .doc(newKmControle.idKmControle)
+                          .set(newKmControle.toMap())
+                          .then((value) {
                         refresh();
+                        setState(() {
+                          isLoading = false;
+                        });
                         Navigator.pop(context);
+                      });
+                      setState(() {
+                        isLoading = false;
+                      });
                     },
-                   child: Text(labelConfirmationButton),
-                  
-                      ),
-                       ],
+                    child: Text(labelConfirmationButton),
+                  ),
+                ],
               )
             ],
           ),
         );
       },
     );
-    
+    setState(() {
+      isLoading = false;
+    });
   }
 
-refresh() async {
-      List<KmControle> temp = [];
+  refresh() async {
+    List<KmControle> temp = [];
+    QuerySnapshot<Map<String, dynamic>> snapshot =
+        await db.collection('usuario/$uid/kmControle').get();
 
-      QuerySnapshot<Map<String, dynamic>> snapshot =
-       await db.collection("kmControle").get();
-
-       for (var doc in snapshot.docs) {
-          temp.add(KmControle.fromMap(doc.data()));
-
-       }
+    for (var doc in snapshot.docs) {
+      temp.add(KmControle.fromMap(doc.data()));
+    }
     setState(() {
       listKmControle = temp;
+      isLoading = false;
     });
-}
-  void remove(KmControle KmControleM) {
-    db.collection("kmControle").doc(KmControleM.idKmControle).delete();
+  }
+
+  void getLocalidade() async {
+    bool serviceEnabled;
+    LocationPermission permission;
+
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      return Future.error('Serviço de localizaçao desativado');
+    }
+
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        return Future.error('Permissao de localizaçao negada');
+      }
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      return Future.error('Permissao de localizaçao negada permanentemente');
+    }
+
+    Position position = await Geolocator.getCurrentPosition();
+    posicaoAtual.value = position;
+  }
+
+  buscaVeiculo() async {
+    List<Veiculo> veiculos = [];
+    QuerySnapshot<Map<String, dynamic>> snapshot =
+        await db.collection('usuario/$uid/veiculo').get();
+
+    for (var doc in snapshot.docs) {
+      veiculos.add(Veiculo.fromMap(doc.data()));
+    }
+    listVeiculos.value = veiculos;
+  }
+
+  remove(KmControle kmControleM) {
+    db
+        .collection('usuario/$uid/kmControle')
+        .doc(kmControleM.idKmControle)
+        .delete();
     refresh();
   }
 }
-
-
