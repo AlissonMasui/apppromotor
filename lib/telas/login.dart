@@ -20,7 +20,7 @@ class _LoginState extends State<Login> {
   final _formKey = GlobalKey<FormState>();
 
   AuthService authService = AuthService();
-    
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -43,13 +43,11 @@ class _LoginState extends State<Login> {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     //Image.asset('assets/images/logoPromotor.png'),
-                    
+
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Text(
-                        (isEntrando)
-                            ? "App do Promotor"
-                            : "Vamos começar?",
+                        (isEntrando) ? "App do Promotor" : "Vamos começar?",
                         textAlign: TextAlign.center,
                         style: const TextStyle(
                           fontSize: 24,

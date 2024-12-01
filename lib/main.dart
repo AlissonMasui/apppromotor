@@ -5,13 +5,13 @@ import 'firebase_options.dart';
 import '../telas/login.dart';
 import 'package:flutter/material.dart';
 
-void main ()async {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
-   await Firebase.initializeApp(
-  options: DefaultFirebaseOptions.currentPlatform,
-);
- runApp(const AppPromotor());
+
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+  runApp(const AppPromotor());
 
   //FirebaseFirestore firestore = FirebaseFirestore.instance;
   // firestore.collection("Só para testar!").doc("Estou testando!").set({
@@ -24,13 +24,11 @@ class AppPromotor extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     return const MaterialApp(
-        title: "App Promotor de Vendas",
-        debugShowCheckedModeBanner: false,
-         
-         home: RoteadorTelas(),
-      );
+      title: "App Promotor de Vendas",
+      debugShowCheckedModeBanner: false,
+      home: RoteadorTelas(),
+    );
   }
 }
 
@@ -57,5 +55,3 @@ class RoteadorTelas extends StatelessWidget {
     );
   }
 }
-
-

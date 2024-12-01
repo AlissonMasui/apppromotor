@@ -8,7 +8,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
 
-
 class ControleRevenda extends StatefulWidget {
   const ControleRevenda({super.key});
 
@@ -18,106 +17,100 @@ class ControleRevenda extends StatefulWidget {
 
 class _ControleRevendaState extends State<ControleRevenda> {
   String uid = FirebaseAuth.instance.currentUser!.uid;
-    List<Revenda> listRevenda =[];
-   FirebaseFirestore db = FirebaseFirestore.instance;
-
+  List<Revenda> listRevenda = [];
+  FirebaseFirestore db = FirebaseFirestore.instance;
 
   @override
   void initState() {
     refresh();
     super.initState();
-
-
-   }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Controle de Revendas'),
-        ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: (){
-           // Navigator.of(context).push(MaterialPageRoute(builder: (context)=>RegistroKM(),),);
-        showFormModal();
-          },
-          child: const Icon(Icons.add),
-),
-
-        body: (listRevenda.isEmpty) 
-        ? const Center(
-             child: Text(
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          // Navigator.of(context).push(MaterialPageRoute(builder: (context)=>RegistroKM(),),);
+          showFormModal();
+        },
+        child: const Icon(Icons.add),
+      ),
+      body: (listRevenda.isEmpty)
+          ? const Center(
+              child: Text(
                 "Nenhuma Registro ainda.\nVamos criar o primeiro?",
                 textAlign: TextAlign.center,
                 style: TextStyle(fontSize: 18),
               ),
-              )
-              : RefreshIndicator(
-                onRefresh: (){
-                  return refresh();
+            )
+          : RefreshIndicator(
+              onRefresh: () {
+                return refresh();
+              },
+              child: ListView(
+                children: List.generate(listRevenda.length, (index) {
+                  Revenda revendaControleM = listRevenda[index];
+                  return Card(
+                      child: Dismissible(
+                    key: ValueKey<Revenda>(revendaControleM),
+                    direction: DismissDirection.endToStart,
+                    background: Container(
+                      alignment: Alignment.centerRight,
+                      padding: const EdgeInsets.only(right: 8.0),
+                      color: Colors.red,
+                      child: const Icon(Icons.delete),
+                    ),
+                    onDismissed: (diretion) {
+                      remove(revendaControleM);
+                    },
+                    child: ListTile(
+                      onTap: () {
+                        //print("Click");
+                      },
+                      onLongPress: () {
+                        showFormModal(model: revendaControleM);
 
-                },
-                child:ListView(
-                  children: List.generate(listRevenda.length, 
-                    (index){
-                     Revenda revendaControleM = listRevenda[index];
-                      return 
-                        Card(
-                        child: Dismissible(
-                          key: ValueKey<Revenda>(revendaControleM),
-                          direction: DismissDirection.endToStart,
-                          background: Container(
-                            alignment: Alignment.centerRight,
-                            padding: const EdgeInsets.only(right: 8.0),
-                            color: Colors.red,
-                          child: const Icon(Icons.delete),
+                        //print("CLick e segurou");
+                      },
+                      title: Row(
+                        children: [
+                          const Text("Revenda :",
+                              style: TextStyle(fontSize: 24.0)),
+                          Text(revendaControleM.nome,
+                              style: const TextStyle(fontSize: 24.0)),
+                        ],
+                      ),
+                      subtitle: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            revendaControleM.nomeDonoGerente,
+                            style: const TextStyle(fontSize: 16.0),
                           ),
-                          onDismissed: (diretion){
-                            remove(revendaControleM);
-                          },
-                          child: ListTile(
-                            onTap: (){
-                              //print("Click");
-                            },
-                            onLongPress: (){
-                                showFormModal(model: revendaControleM);
-                          
-                              //print("CLick e segurou");
-                            },
-                          title:Row(
-                            children: [
-                              const Text("Revenda :",style: TextStyle(fontSize: 24.0)),
-                              Text( revendaControleM.nome , style: const TextStyle(fontSize: 24.0) ),
-                            ],
+                          Text(
+                            revendaControleM.foneDonoGerente,
+                            style: const TextStyle(fontSize: 16.0),
                           ),
-                          subtitle: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween ,
-                            children: [
-                            Text( revendaControleM.nomeDonoGerente, style: const TextStyle(fontSize: 16.0),),
-                            Text( revendaControleM.foneDonoGerente  , style: const TextStyle(fontSize: 16.0),),
-                            
-                                              ],
-                                        ),
-                                        
-                                      ),
-                        )
-          );
-        }
-
-        ),
-      
-      
-      ),
-      ),
-      );
+                        ],
+                      ),
+                    ),
+                  ));
+                }),
+              ),
+            ),
+    );
   }
-  showFormModal({Revenda? model}){
-    
+
+  showFormModal({Revenda? model}) {
     // Labels à serem mostradas no Modal
     String labelTitle = "Registrar Revenda";
     String labelConfirmationButton = "Salvar";
     String labelSkipButton = "Cancelar";
-    
+
     // Controlador do campo que receberá o nome do Campo
     TextEditingController nomeController = TextEditingController();
     TextEditingController cnpjController = TextEditingController();
@@ -126,9 +119,10 @@ class _ControleRevendaState extends State<ControleRevenda> {
     TextEditingController dataNacimentoDonoController = TextEditingController();
     TextEditingController nomeCompradorController = TextEditingController();
     TextEditingController foneCompradorController = TextEditingController();
-    TextEditingController dataNacimentoCompradorController = TextEditingController();
+    TextEditingController dataNacimentoCompradorController =
+        TextEditingController();
 
-   if(model !=null){
+    if (model != null) {
       labelTitle = "Editando Registro de Revenda";
       nomeController.text = model.nome;
       cnpjController.text = model.cnpj;
@@ -138,14 +132,10 @@ class _ControleRevendaState extends State<ControleRevenda> {
       dataNacimentoDonoController.text = model.dataNacimentoDono;
       foneCompradorController.text = model.foneComprador;
       dataNacimentoCompradorController.text = model.dataNacimentoComprador;
-      
-   }
+    }
 
-
-
-   
-   // Função do Flutter que mostra o modal na tela
-  showModalBottomSheet(
+    // Função do Flutter que mostra o modal na tela
+    showModalBottomSheet(
       context: context,
 
       // Define que as bordas verticais serão arredondadas
@@ -176,8 +166,7 @@ class _ControleRevendaState extends State<ControleRevenda> {
                 ],
                 keyboardType: TextInputType.number,
                 controller: cnpjController,
-                decoration:
-                    const InputDecoration(label: Text("CNPJ")),
+                decoration: const InputDecoration(label: Text("CNPJ")),
               ),
               TextFormField(
                 keyboardType: TextInputType.name,
@@ -191,10 +180,6 @@ class _ControleRevendaState extends State<ControleRevenda> {
                   FilteringTextInputFormatter.digitsOnly,
                   TelefoneInputFormatter()
                 ],
-
-
-
-
                 keyboardType: TextInputType.phone,
                 controller: foneDonoGerenteController,
                 decoration:
@@ -229,10 +214,8 @@ class _ControleRevendaState extends State<ControleRevenda> {
                 },
               ),
 
-
-
               TextFormField(
-              keyboardType: TextInputType.name,
+                keyboardType: TextInputType.name,
                 controller: nomeCompradorController,
                 decoration:
                     const InputDecoration(label: Text("Nome Comprador")),
@@ -277,8 +260,6 @@ class _ControleRevendaState extends State<ControleRevenda> {
                 },
               ),
 
-
-
               const SizedBox(
                 height: 16,
               ),
@@ -296,58 +277,56 @@ class _ControleRevendaState extends State<ControleRevenda> {
                   ),
                   ElevatedButton(
                     onPressed: () {
-                      
-                    Revenda newRevenda = Revenda(
-                      id_revenda: Uuid().v1(),
-                       cnpj: cnpjController.text,
-                       nome: nomeController.text,
-                         nomeDonoGerente: nomeDonoGerenteController.text,
-                          foneDonoGerente: foneDonoGerenteController.text,
-                           dataNacimentoDono: dataNacimentoDonoController.text,
-                            nomeComprador: nomeCompradorController.text,
-                             foneComprador: foneCompradorController.text,
-                              dataNacimentoComprador: dataNacimentoCompradorController.text,
-                              );
-                          if(model != null){
-                                newRevenda.id_revenda = model.id_revenda;
-                          }
+                      Revenda newRevenda = Revenda(
+                        id_revenda: Uuid().v1(),
+                        cnpj: cnpjController.text,
+                        nome: nomeController.text,
+                        nomeDonoGerente: nomeDonoGerenteController.text,
+                        foneDonoGerente: foneDonoGerenteController.text,
+                        dataNacimentoDono: dataNacimentoDonoController.text,
+                        nomeComprador: nomeCompradorController.text,
+                        foneComprador: foneCompradorController.text,
+                        dataNacimentoComprador:
+                            dataNacimentoCompradorController.text,
+                      );
+                      if (model != null) {
+                        newRevenda.id_revenda = model.id_revenda;
+                      }
 
-                          db.collection('usuario/$uid/revenda').doc(newRevenda.id_revenda).set(newRevenda.toMap());
-                        refresh();
-                        Navigator.pop(context);
+                      db
+                          .collection('usuario/$uid/revenda')
+                          .doc(newRevenda.id_revenda)
+                          .set(newRevenda.toMap());
+                      refresh();
+                      Navigator.pop(context);
                     },
-                   child: Text(labelConfirmationButton),
-                  
-                      ),
-                       ],
+                    child: Text(labelConfirmationButton),
+                  ),
+                ],
               )
             ],
           ),
         );
       },
     );
+  }
+
+  refresh() async {
+    List<Revenda> temp = [];
+
+    QuerySnapshot<Map<String, dynamic>> snapshot =
+        await db.collection('usuario/$uid/revenda').get();
+
+    for (var doc in snapshot.docs) {
+      temp.add(Revenda.fromMap(doc.data()));
     }
-
-refresh() async {
-      List<Revenda> temp = [];
-
-      QuerySnapshot<Map<String, dynamic>> snapshot =
-       await db.collection('usuario/$uid/revenda').get();
-
-       for (var doc in snapshot.docs) {
-          temp.add(Revenda.fromMap(doc.data()));
-
-       }
     setState(() {
       listRevenda = temp;
     });
-}
+  }
 
   void remove(Revenda revendaM) {
     db.collection("usuario/$uid/revenda").doc(revendaM.id_revenda).delete();
     refresh();
   }
 }
-
-    
-  

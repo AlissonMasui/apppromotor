@@ -2,30 +2,26 @@
 import 'dart:convert';
 
 class Despesa {
+  String idDespesa;
+  String numeroNf;
+  String oQue;
+  String onde;
+  String quando;
+  String preco;
+  String km;
+  String? idVeiculo;
+  //String idImagem;
 
-    String idDespesa;
-    String numeroNf;
-    String oQue;
-    String onde;
-    String quando;
-    String preco;
-    String km;
-    String? idVeiculo;
-    //String idImagem;
-
-
-    Despesa({
-     required this.idDespesa,
-     required this.numeroNf,
-     required this.oQue,
-     required this.onde,
-     required this.quando,
-     required this.preco,
-     required this.km,
-     required this.idVeiculo,
-    }
-      );
-
+  Despesa({
+    required this.idDespesa,
+    required this.numeroNf,
+    required this.oQue,
+    required this.onde,
+    required this.quando,
+    required this.preco,
+    required this.km,
+    required this.idVeiculo,
+  });
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
@@ -36,7 +32,7 @@ class Despesa {
       'quando': quando,
       'preco': preco,
       'km': km,
-      'idVeiculo': idVeiculo,
+      'id_veiculo': idVeiculo,
     };
   }
 
@@ -49,12 +45,16 @@ class Despesa {
       quando: map['quando'] as String,
       preco: map['preco'] as String,
       km: map['km'] as String,
-      idVeiculo: map.containsKey('id_veiculo')? map['id_veiculo'] : '',
+      idVeiculo: map.containsKey('id_veiculo')
+          ? map['id_veiculo']
+          : map.containsKey('idVeiculo')
+              ? map['idVeiculo']
+              : null,
     );
   }
 
   String toJson() => json.encode(toMap());
 
-  factory Despesa.fromJson(String source) => Despesa.fromMap(json.decode(source) as Map<String, dynamic>);
-
+  factory Despesa.fromJson(String source) =>
+      Despesa.fromMap(json.decode(source) as Map<String, dynamic>);
 }

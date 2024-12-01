@@ -2,22 +2,18 @@
 import 'dart:convert';
 
 class Diario {
+  String idDiario;
+  String titulo;
+  String texto;
+  String data;
+  String idRevenda;
 
-String idDiario;
-String titulo;
-String texto;
-String data;
-String idRevenda;
-
-Diario({
-required this.idDiario,
-  required this.titulo,
-  required this.texto,
-  required this.data,
-  required this.idRevenda
-
-});
-
+  Diario(
+      {required this.idDiario,
+      required this.titulo,
+      required this.texto,
+      required this.data,
+      required this.idRevenda});
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
@@ -41,7 +37,8 @@ required this.idDiario,
 
   String toJson() => json.encode(toMap());
 
-  factory Diario.fromJson(String source) => Diario.fromMap(json.decode(source) as Map<String, dynamic>);
+  factory Diario.fromJson(String source) =>
+      Diario.fromMap(json.decode(source) as Map<String, dynamic>);
 
   @override
   String toString() {

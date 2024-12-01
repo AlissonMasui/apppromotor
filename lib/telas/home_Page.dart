@@ -11,7 +11,6 @@ import '../telas/controle_revenda.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-
 class Homepage extends StatefulWidget {
   final User user;
   const Homepage({super.key, required this.user});
@@ -21,10 +20,7 @@ class Homepage extends StatefulWidget {
 }
 
 class _HomepageState extends State<Homepage> {
-   
-     @override
- 
-
+  @override
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -62,38 +58,42 @@ class _HomepageState extends State<Homepage> {
           ],
         ),
       ),
-
-      appBar: AppBar(title: Text('App Promotor'),),
+      appBar: AppBar(
+        title: Text('App Promotor'),
+      ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(
           children: <Widget>[
-             Padding(
+            Padding(
               padding: const EdgeInsets.only(top: 24.0),
               child: SizedBox(
                 width: double.maxFinite,
                 child: ElevatedButton(
-                  child: 
-                  const Text('Controle de KM'),
-                  onPressed: (){
-                    Navigator.of(context).push(MaterialPageRoute(builder: (context)=>ControleKm(),),);
+                  child: const Text('Controle de KM'),
+                  onPressed: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => ControleKm(),
+                      ),
+                    );
                   },
-                  
-                  
                 ),
               ),
             ),
-        Padding(
+            Padding(
               padding: const EdgeInsets.only(top: 24.0),
               child: SizedBox(
                 width: double.maxFinite,
                 child: ElevatedButton(
                   child: const Text('Controle Despesas'),
-                  onPressed: (){
-                    Navigator.of(context).push(MaterialPageRoute(builder: (context)=>ControleDespesa(),),);
+                  onPressed: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => ControleDespesa(),
+                      ),
+                    );
                   },
-                  
-                  
                 ),
               ),
             ),
@@ -103,11 +103,13 @@ class _HomepageState extends State<Homepage> {
                 width: double.maxFinite,
                 child: ElevatedButton(
                   child: const Text('Diario de campo'),
-                  onPressed: (){
-                    Navigator.of(context).push(MaterialPageRoute(builder: (context)=>DiarioDeCampo(),),);
+                  onPressed: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => DiarioDeCampo(),
+                      ),
+                    );
                   },
-                  
-                  
                 ),
               ),
             ),
@@ -117,47 +119,51 @@ class _HomepageState extends State<Homepage> {
                 width: double.maxFinite,
                 child: ElevatedButton(
                   child: const Text('Controle de Ações'),
-                  onPressed: (){
-                    Navigator.of(context).push(MaterialPageRoute(builder: (context)=>ControleAcaoVendas(),),);
+                  onPressed: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => ControleAcaoVendas(),
+                      ),
+                    );
                   },
-                  
-                  
                 ),
               ),
-            ),Padding(
+            ),
+            Padding(
               padding: const EdgeInsets.only(top: 24.0),
               child: SizedBox(
                 width: double.maxFinite,
                 child: ElevatedButton(
                   child: const Text('Controle de revendas'),
-                  onPressed: (){
-                    Navigator.of(context).push(MaterialPageRoute(builder: (context)=>ControleRevenda(),),);
+                  onPressed: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => ControleRevenda(),
+                      ),
+                    );
                   },
-                  
-                  
                 ),
               ),
-            ),Padding(
+            ),
+            Padding(
               padding: const EdgeInsets.only(top: 24.0),
               child: SizedBox(
                 width: double.maxFinite,
                 child: ElevatedButton(
                   child: const Text('Controle de veiculos'),
-                  onPressed: (){
-                    Navigator.of(context).push(MaterialPageRoute(builder: (context)=>ControleVeiculos(),),);
+                  onPressed: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => ControleVeiculos(),
+                      ),
+                    );
                   },
-                  
-                  
                 ),
               ),
             ),
           ],
         ),
       ),
-
-
     );
   }
-  
-  }
-
+}

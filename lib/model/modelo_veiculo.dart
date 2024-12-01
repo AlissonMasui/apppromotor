@@ -15,12 +15,7 @@ class Veiculo {
     required this.placa,
     required this.revisao,
     required this.kmAtual,
-    });
-
-
-
-
-
+  });
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
@@ -46,7 +41,8 @@ class Veiculo {
 
   String toJson() => json.encode(toMap());
 
-  factory Veiculo.fromJson(String source) => Veiculo.fromMap(json.decode(source) as Map<String, dynamic>);
+  factory Veiculo.fromJson(String source) =>
+      Veiculo.fromMap(json.decode(source) as Map<String, dynamic>);
 
   @override
   String toString() {

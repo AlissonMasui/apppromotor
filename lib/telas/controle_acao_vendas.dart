@@ -9,6 +9,7 @@ import '../model/modeloRevenda.dart';
 
 String uid = FirebaseAuth.instance.currentUser!.uid;
 String name = FirebaseAuth.instance.currentUser!.displayName!;
+
 class ControleAcaoVendas extends StatefulWidget {
   const ControleAcaoVendas({super.key});
 
@@ -120,7 +121,8 @@ class _ControleRevendaState extends State<ControleAcaoVendas> {
     TextEditingController dataAcaoController = TextEditingController();
     dataAcaoController.text = DateFormat('dd-MM-yyyy').format(DateTime.now());
     TextEditingController propositoController = TextEditingController();
-    TextEditingController propositoAlcansadosController =TextEditingController();
+    TextEditingController propositoAlcansadosController =
+        TextEditingController();
     TextEditingController idPromotorController = TextEditingController();
     idPromotorController.text = name;
     TextEditingController idrevendaController = TextEditingController();
@@ -130,9 +132,7 @@ class _ControleRevendaState extends State<ControleAcaoVendas> {
       idController.text = model.idAcaoVendas;
       propositoController.text = model.proposito;
       dataAcaoController.text = model.dataAcao;
-      if (model.propositosAlcansados == null) {
-        model.propositosAlcansados = "Não a propositos alcançados";
-      }
+      model.propositosAlcansados ??= "Não a propositos alcançados";
       propositoAlcansadosController.text = model.propositosAlcansados!;
       idrevendaController.text = model.idRevenda;
 
@@ -157,9 +157,7 @@ class _ControleRevendaState extends State<ControleAcaoVendas> {
           child: ListView(
             children: [
               Text(labelTitle),
-
-
-             ValueListenableBuilder<List<Revenda>>(
+              ValueListenableBuilder<List<Revenda>>(
                 valueListenable: listRevenda,
                 builder: (context, revendas, _) {
                   if (revendas.isEmpty) {
@@ -172,9 +170,10 @@ class _ControleRevendaState extends State<ControleAcaoVendas> {
                         decoration: BoxDecoration(
                           border: Border.all(
                             color: Colors.grey, // Cor da borda
-                            width: 1.0,         // Espessura da borda
+                            width: 1.0, // Espessura da borda
                           ),
-                          borderRadius: BorderRadius.circular(8.0), // Bordas arredondadas
+                          borderRadius:
+                              BorderRadius.circular(8.0), // Bordas arredondadas
                         ),
                         padding: const EdgeInsets.symmetric(horizontal: 8.0),
                         child: DropdownButton<String>(
@@ -205,9 +204,8 @@ class _ControleRevendaState extends State<ControleAcaoVendas> {
                 decoration: const InputDecoration(
                     label: Text("Proposito Ação de vendas")),
               ),
-
               TextField(
-                controller:  dataAcaoController,
+                controller: dataAcaoController,
                 decoration: const InputDecoration(
                   label: Text("Selecione a Data"),
                   filled: true,
@@ -238,7 +236,6 @@ class _ControleRevendaState extends State<ControleAcaoVendas> {
                 decoration: const InputDecoration(
                     label: Text("Breve texto dos objetivos alcançados")),
               ),
-
               const SizedBox(
                 height: 16,
               ),
@@ -301,7 +298,10 @@ class _ControleRevendaState extends State<ControleAcaoVendas> {
   }
 
   void remove(AcaoVendas acaoVendasM) {
-    db.collection('usuario/$uid/acaoVendas').doc(acaoVendasM.idRevenda).delete();
+    db
+        .collection('usuario/$uid/acaoVendas')
+        .doc(acaoVendasM.idRevenda)
+        .delete();
     refresh();
   }
 
@@ -318,7 +318,7 @@ class _ControleRevendaState extends State<ControleAcaoVendas> {
   buscaRevenda() async {
     List<Revenda> revendas = [];
     QuerySnapshot<Map<String, dynamic>> snapshot =
-    await db.collection('usuario/$uid/revenda').get();
+        await db.collection('usuario/$uid/revenda').get();
 
     for (var doc in snapshot.docs) {
       revendas.add(Revenda.fromMap(doc.data()));

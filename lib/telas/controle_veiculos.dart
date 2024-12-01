@@ -1,11 +1,9 @@
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
 
 import '../model/modelo_veiculo.dart';
-
 
 class ControleVeiculos extends StatefulWidget {
   const ControleVeiculos({super.key});
@@ -15,8 +13,8 @@ class ControleVeiculos extends StatefulWidget {
 }
 
 class _ControleVeiculosState extends State<ControleVeiculos> {
-  List<Veiculo> listVeiculo =[];
-   FirebaseFirestore db = FirebaseFirestore.instance;
+  List<Veiculo> listVeiculo = [];
+  FirebaseFirestore db = FirebaseFirestore.instance;
   String uid = FirebaseAuth.instance.currentUser!.uid;
 
   @override
@@ -30,110 +28,103 @@ class _ControleVeiculosState extends State<ControleVeiculos> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Controle Veiculos:'),
-        ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: (){
-           // Navigator.of(context).push(MaterialPageRoute(builder: (context)=>RegistroKM(),),);
-        showFormModal();
-          },
-          child: const Icon(Icons.add),
-),
-
-        body: (listVeiculo.isEmpty) 
-        ? const Center(
-             child: Text(
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          // Navigator.of(context).push(MaterialPageRoute(builder: (context)=>RegistroKM(),),);
+          showFormModal();
+        },
+        child: const Icon(Icons.add),
+      ),
+      body: (listVeiculo.isEmpty)
+          ? const Center(
+              child: Text(
                 "Nenhuma Registro ainda.\nVamos criar o primeiro?",
                 textAlign: TextAlign.center,
                 style: TextStyle(fontSize: 18),
               ),
-              )
-              : RefreshIndicator(
-                onRefresh: (){
-                  return refresh();
+            )
+          : RefreshIndicator(
+              onRefresh: () {
+                return refresh();
+              },
+              child: ListView(
+                children: List.generate(listVeiculo.length, (index) {
+                  Veiculo veiculoM = listVeiculo[index];
+                  return Card(
+                      child: Dismissible(
+                    key: ValueKey<Veiculo>(veiculoM),
+                    direction: DismissDirection.endToStart,
+                    background: Container(
+                      alignment: Alignment.centerRight,
+                      padding: const EdgeInsets.only(right: 8.0),
+                      color: Colors.red,
+                      child: const Icon(Icons.delete),
+                    ),
+                    onDismissed: (diretion) {
+                      remove(veiculoM);
+                    },
+                    child: ListTile(
+                      onTap: () {
+                        //print("Click");
+                      },
+                      onLongPress: () {
+                        showFormModal(model: veiculoM);
 
-                },
-                child:ListView(
-                  children: List.generate(listVeiculo.length, 
-                    (index){
-                     Veiculo veiculoM = listVeiculo[index];
-                      return 
-                        Card(
-                        child: Dismissible(
-                          key: ValueKey<Veiculo>(veiculoM),
-                          direction: DismissDirection.endToStart,
-                          background: Container(
-                            alignment: Alignment.centerRight,
-                            padding: const EdgeInsets.only(right: 8.0),
-                            color: Colors.red,
-                          child: const Icon(Icons.delete),
+                        //print("CLick e segurou");
+                      },
+                      title: Row(
+                        children: [
+                          const Text("Veiculo :",
+                              style: TextStyle(fontSize: 24.0)),
+                          Text(veiculoM.modelo,
+                              style: const TextStyle(fontSize: 24.0)),
+                        ],
+                      ),
+                      subtitle: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            veiculoM.placa,
+                            style: const TextStyle(fontSize: 16.0),
                           ),
-                          onDismissed: (diretion){
-                            remove(veiculoM);
-                          },
-                          child: ListTile(
-                            onTap: (){
-                              //print("Click");
-                            },
-                            onLongPress: (){
-                                showFormModal(model: veiculoM);
-                          
-                              //print("CLick e segurou");
-                            },
-                          title:Row(
-                            children: [
-                              const Text("Veiculo :",style: TextStyle(fontSize: 24.0)),
-                              Text( veiculoM.modelo , style: const TextStyle(fontSize: 24.0) ),
-                            ],
-                          ),
-                          subtitle: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween ,
-                            children: [
-                            Text( veiculoM.placa , style: const TextStyle(fontSize: 16.0),),
-                            Text(veiculoM.kmAtual, style: const TextStyle(fontSize: 16.0),)
-                          
-                                              ],
-                                        ),
-                                        
-                                      ),
-                        )
-          );
-        }
-
-        ),
-      
-      
-      ),
-      ),
-      );
+                          Text(
+                            veiculoM.kmAtual,
+                            style: const TextStyle(fontSize: 16.0),
+                          )
+                        ],
+                      ),
+                    ),
+                  ));
+                }),
+              ),
+            ),
+    );
   }
-  showFormModal({Veiculo? model}){
-    
+
+  showFormModal({Veiculo? model}) {
     // Labels à serem mostradas no Modal
     String labelTitle = "Adicionar Veiculo:";
     String labelConfirmationButton = "Salvar";
     String labelSkipButton = "Cancelar";
-    
+
     // Controlador do campo que receberá o nome do Campo
     TextEditingController modeloController = TextEditingController();
     TextEditingController marcaController = TextEditingController();
     TextEditingController placaController = TextEditingController();
     TextEditingController revisaoController = TextEditingController();
-    TextEditingController kmAtualController= TextEditingController();
-   if(model !=null){
+    TextEditingController kmAtualController = TextEditingController();
+    if (model != null) {
       labelTitle = "Editando Registro de Veiculo";
       modeloController.text = model.modelo;
       marcaController.text = model.marca;
       placaController.text = model.placa;
       revisaoController.text = model.revisao;
       kmAtualController.text = model.kmAtual;
+    }
 
-   }
-
-
-
-   
-   // Função do Flutter que mostra o modal na tela
-  showModalBottomSheet(
+    // Função do Flutter que mostra o modal na tela
+    showModalBottomSheet(
       context: context,
 
       // Define que as bordas verticais serão arredondadas
@@ -153,31 +144,24 @@ class _ControleVeiculosState extends State<ControleVeiculos> {
               Text(labelTitle),
               TextFormField(
                 controller: modeloController,
-                decoration:
-                    const InputDecoration(label: Text("Modelo:")),
+                decoration: const InputDecoration(label: Text("Modelo:")),
               ),
               TextFormField(
                 controller: marcaController,
-                decoration:
-                    const InputDecoration(label: Text("Marca")),
+                decoration: const InputDecoration(label: Text("Marca")),
               ),
               TextFormField(
                 controller: placaController,
-                decoration:
-                    const InputDecoration(label: Text("Placa")),
+                decoration: const InputDecoration(label: Text("Placa")),
               ),
               TextFormField(
                 controller: revisaoController,
-                decoration:
-                    const InputDecoration(label: Text("Revisão:")),
+                decoration: const InputDecoration(label: Text("Revisão:")),
               ),
               TextFormField(
-
                 controller: kmAtualController,
-                decoration:
-                    const InputDecoration(label: Text("KmAtual")),
+                decoration: const InputDecoration(label: Text("KmAtual")),
               ),
-              
               const SizedBox(
                 height: 16,
               ),
@@ -195,56 +179,53 @@ class _ControleVeiculosState extends State<ControleVeiculos> {
                   ),
                   ElevatedButton(
                     onPressed: () {
-                     
-                    Veiculo newVeiculo = Veiculo(
-                      idVeiculo: const Uuid().v1(), 
-                      modelo: modeloController.text, 
-                      marca: marcaController.text, 
-                      placa: placaController.text, 
-                      revisao: revisaoController.text,
-                      kmAtual: kmAtualController.text,
+                      Veiculo newVeiculo = Veiculo(
+                        idVeiculo: const Uuid().v1(),
+                        modelo: modeloController.text,
+                        marca: marcaController.text,
+                        placa: placaController.text,
+                        revisao: revisaoController.text,
+                        kmAtual: kmAtualController.text,
                       );
-                          
-                          if(model != null){
-                                newVeiculo.idVeiculo = model.idVeiculo;
-                          }
 
-                          db.collection('usuario/$uid/veiculo').doc(newVeiculo.idVeiculo).set(newVeiculo.toMap());
-                        refresh();
-                        Navigator.pop(context);
+                      if (model != null) {
+                        newVeiculo.idVeiculo = model.idVeiculo;
+                      }
+
+                      db
+                          .collection('usuario/$uid/veiculo')
+                          .doc(newVeiculo.idVeiculo)
+                          .set(newVeiculo.toMap());
+                      refresh();
+                      Navigator.pop(context);
                     },
-                   child: Text(labelConfirmationButton),
-                  
-                      ),
-                       ],
+                    child: Text(labelConfirmationButton),
+                  ),
+                ],
               )
             ],
           ),
         );
       },
     );
+  }
+
+  refresh() async {
+    List<Veiculo> temp = [];
+
+    QuerySnapshot<Map<String, dynamic>> snapshot =
+        await db.collection('usuario/$uid/veiculo').get();
+
+    for (var doc in snapshot.docs) {
+      temp.add(Veiculo.fromMap(doc.data()));
     }
-
-refresh() async {
-      List<Veiculo> temp = [];
-
-      QuerySnapshot<Map<String, dynamic>> snapshot =
-       await db.collection('usuario/$uid/veiculo').get();
-
-       for (var doc in snapshot.docs) {
-          temp.add(Veiculo.fromMap(doc.data()));
-
-       }
     setState(() {
       listVeiculo = temp;
     });
-}
+  }
 
   void remove(Veiculo model) {
     db.collection('usuario/$uid/veiculo').doc(model.idVeiculo).delete();
     refresh();
   }
 }
-
-    
-  

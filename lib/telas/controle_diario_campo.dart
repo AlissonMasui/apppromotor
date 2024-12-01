@@ -61,58 +61,58 @@ class _DiarioDeCampoState extends State<DiarioDeCampo> {
       body: isLoading // Verifica se está carregando
           ? const Center(child: CircularProgressIndicator()) // Exibe o loading
           : (listDiario.isEmpty)
-          ? const Center(
-        child: Text(
-          "Nenhuma Registro ainda.\nVamos criar o primeiro?",
-          textAlign: TextAlign.center,
-          style: TextStyle(fontSize: 18),
-        ),
-      )
-          : RefreshIndicator(
-        onRefresh: () {
-          return refresh();
-        },
-        child: ListView(
-          children: List.generate(listDiario.length, (index) {
-            Diario diarioM = listDiario[index];
-            return Card(
-                child: Dismissible(
-                  key: ValueKey<Diario>(diarioM),
-                  direction: DismissDirection.endToStart,
-                  background: Container(
-                    alignment: Alignment.centerRight,
-                    padding: const EdgeInsets.only(right: 8.0),
-                    color: Colors.red,
-                    child: const Icon(Icons.delete),
+              ? const Center(
+                  child: Text(
+                    "Nenhuma Registro ainda.\nVamos criar o primeiro?",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 18),
                   ),
-                  onDismissed: (diretion) {
-                  remove(diarioM);
+                )
+              : RefreshIndicator(
+                  onRefresh: () {
+                    return refresh();
                   },
-                  child: ListTile(
-                    onTap: () {},
-                    onLongPress: () {
-                      showFormModal(model: diarioM);
-                    },
-                    title: Row(
-                      children: [
-                        const Text("Titulo:",
-                            style: TextStyle(fontSize: 24.0)),
-                        Text(diarioM.titulo,
-                            style: const TextStyle(fontSize: 24.0)),
-                      ],
-                    ),
-                    subtitle: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(diarioM.data,
-                            style: const TextStyle(fontSize: 16.0)),
-                      ],
-                    ),
+                  child: ListView(
+                    children: List.generate(listDiario.length, (index) {
+                      Diario diarioM = listDiario[index];
+                      return Card(
+                          child: Dismissible(
+                        key: ValueKey<Diario>(diarioM),
+                        direction: DismissDirection.endToStart,
+                        background: Container(
+                          alignment: Alignment.centerRight,
+                          padding: const EdgeInsets.only(right: 8.0),
+                          color: Colors.red,
+                          child: const Icon(Icons.delete),
+                        ),
+                        onDismissed: (diretion) {
+                          remove(diarioM);
+                        },
+                        child: ListTile(
+                          onTap: () {},
+                          onLongPress: () {
+                            showFormModal(model: diarioM);
+                          },
+                          title: Row(
+                            children: [
+                              const Text("Titulo:",
+                                  style: TextStyle(fontSize: 24.0)),
+                              Text(diarioM.titulo,
+                                  style: const TextStyle(fontSize: 24.0)),
+                            ],
+                          ),
+                          subtitle: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(diarioM.data,
+                                  style: const TextStyle(fontSize: 16.0)),
+                            ],
+                          ),
+                        ),
+                      ));
+                    }),
                   ),
-                ));
-          }),
-        ),
-      ),
+                ),
     );
   }
 
@@ -125,13 +125,11 @@ class _DiarioDeCampoState extends State<DiarioDeCampo> {
     String labelConfirmationButton = "Salvar";
     String labelSkipButton = "Cancelar";
 
-
     TextEditingController tituloController = TextEditingController();
     TextEditingController textocontroller = TextEditingController();
     TextEditingController dataController = TextEditingController();
-    dataController.text =  DateFormat('dd-MM-yyyy').format(DateTime.now());
+    dataController.text = DateFormat('dd-MM-yyyy').format(DateTime.now());
     TextEditingController idRevendaController = TextEditingController();
-
 
     if (model != null) {
       labelTitle = "Editando Diario de campo";
@@ -156,16 +154,15 @@ class _DiarioDeCampoState extends State<DiarioDeCampo> {
             children: [
               Text(labelTitle),
               TextFormField(
-             controller: tituloController,
-                decoration: const InputDecoration(
-                    label: Text("Digite o titulo:")),
+                controller: tituloController,
+                decoration:
+                    const InputDecoration(label: Text("Digite o titulo:")),
               ),
               TextFormField(
                 controller: textocontroller,
-                decoration:
-                const InputDecoration(label: Text("Digite aqui como foi o dia:")),
+                decoration: const InputDecoration(
+                    label: Text("Digite aqui como foi o dia:")),
               ),
-
               TextField(
                 controller: dataController,
                 decoration: const InputDecoration(
@@ -188,7 +185,6 @@ class _DiarioDeCampoState extends State<DiarioDeCampo> {
                   }
                 },
               ),
-
               ValueListenableBuilder<List<Revenda>>(
                 valueListenable: listRevendas,
                 builder: (context, revendas, _) {
@@ -205,7 +201,7 @@ class _DiarioDeCampoState extends State<DiarioDeCampo> {
                             width: 1.0, // Espessura da borda
                           ),
                           borderRadius:
-                          BorderRadius.circular(8.0), // Bordas arredondadas
+                              BorderRadius.circular(8.0), // Bordas arredondadas
                         ),
                         padding: const EdgeInsets.symmetric(horizontal: 8.0),
                         child: DropdownButton<String>(
@@ -296,7 +292,7 @@ class _DiarioDeCampoState extends State<DiarioDeCampo> {
   refresh() async {
     List<Diario> temp = [];
     QuerySnapshot<Map<String, dynamic>> snapshot =
-    await db.collection('usuario/$uid/diario').get();
+        await db.collection('usuario/$uid/diario').get();
 
     for (var doc in snapshot.docs) {
       temp.add(Diario.fromMap(doc.data()));
@@ -307,11 +303,10 @@ class _DiarioDeCampoState extends State<DiarioDeCampo> {
     });
   }
 
-
   buscaRevenda() async {
     List<Revenda> revendas = [];
     QuerySnapshot<Map<String, dynamic>> snapshot =
-    await db.collection('usuario/$uid/revenda').get();
+        await db.collection('usuario/$uid/revenda').get();
 
     for (var doc in snapshot.docs) {
       revendas.add(Revenda.fromMap(doc.data()));
@@ -320,10 +315,7 @@ class _DiarioDeCampoState extends State<DiarioDeCampo> {
   }
 
   remove(Diario diarioM) {
-    db
-        .collection('usuario/$uid/diario')
-        .doc(diarioM.idDiario)
-        .delete();
+    db.collection('usuario/$uid/diario').doc(diarioM.idDiario).delete();
     refresh();
   }
 }

@@ -7,9 +7,12 @@ class KmcontrolServices {
   FirebaseFirestore firestore = FirebaseFirestore.instance;
 
   Future<void> adicionarListin({required KmControle kmControle}) async {
-    return firestore.collection(uid).doc(kmControle.idKmControle).set(kmControle.toMap());
-  }  
-  
+    return firestore
+        .collection(uid)
+        .doc(kmControle.idKmControle)
+        .set(kmControle.toMap());
+  }
+
   Future<List<KmControle>> lerKmControle() async {
     List<KmControle> temp = [];
 

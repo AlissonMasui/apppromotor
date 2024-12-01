@@ -2,7 +2,6 @@
 import 'dart:convert';
 
 class Revenda {
-
   String id_revenda;
   String nome;
   String cnpj;
@@ -13,18 +12,17 @@ class Revenda {
   String foneComprador;
   String dataNacimentoComprador;
 
-Revenda({
-  required this.id_revenda,
-  required this.cnpj,
-  required this.nome,
-  required this.nomeDonoGerente,
-  required this.foneDonoGerente,
-  required this.dataNacimentoDono,
-  required this.nomeComprador,
-  required this.foneComprador,
-  required this.dataNacimentoComprador,
-});
-
+  Revenda({
+    required this.id_revenda,
+    required this.cnpj,
+    required this.nome,
+    required this.nomeDonoGerente,
+    required this.foneDonoGerente,
+    required this.dataNacimentoDono,
+    required this.nomeComprador,
+    required this.foneComprador,
+    required this.dataNacimentoComprador,
+  });
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
@@ -56,5 +54,6 @@ Revenda({
 
   String toJson() => json.encode(toMap());
 
-  factory Revenda.fromJson(String source) => Revenda.fromMap(json.decode(source) as Map<String, dynamic>);
+  factory Revenda.fromJson(String source) =>
+      Revenda.fromMap(json.decode(source) as Map<String, dynamic>);
 }

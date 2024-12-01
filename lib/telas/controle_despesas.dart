@@ -1,11 +1,10 @@
 import 'package:apppromotor/model/modelo_despesa.dart';
-import 'package:brasil_fields/brasil_fields.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/services.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:uuid/uuid.dart';
 import 'package:intl/intl.dart';
+import 'package:uuid/uuid.dart';
+
 import '../model/modelo_veiculo.dart';
 
 class ControleDespesa extends StatefulWidget {
@@ -97,8 +96,9 @@ class _ControleDespesasState extends State<ControleDespesa> {
   }
 
   Future<void> showFormModal({Despesa? model}) async {
-    await buscaVeiculo();
     setState(() => isLoading = true);
+    await buscaVeiculo();
+    setState(() => isLoading = false);
 
     String labelTitle = model == null
         ? "Registro de Despesas"
@@ -115,16 +115,23 @@ class _ControleDespesasState extends State<ControleDespesa> {
 
     quandoController.text = DateFormat('dd-MM-yyyy').format(DateTime.now());
 
-//     if (model != null) {
-//       numeroNfController.text = model.numeroNf;
-//       oQueController.text = model.oQue;
-//       ondeController.text = model.onde;
-//       quandoController.text = model.quando;
-//       precoController.text = model.preco;
-//       kmController.text = model.km;
-//       idVeiculoController.text = model.idVeiculo ?? "";
-//       selected.value = model.idVeiculo;
-//     }
+    if (model != null) {
+      numeroNfController.text = model.numeroNf;
+      oQueController.text = model.oQue;
+      ondeController.text = model.onde;
+      quandoController.text = model.quando;
+      precoController.text = model.preco;
+      kmController.text = model.km;
+      idVeiculoController.text = model.idVeiculo ?? "";
+
+      // Validação e atribuição do veículo selecionado
+      if (listVeiculos.value
+          .any((veiculo) => veiculo.idVeiculo == model.idVeiculo)) {
+        selected.value = model.idVeiculo;
+      } else {
+        selected.value = null;
+      }
+    }
 
     showModalBottomSheet(
       context: context,
@@ -183,14 +190,18 @@ class _ControleDespesasState extends State<ControleDespesa> {
               ValueListenableBuilder<List<Veiculo>>(
                 valueListenable: listVeiculos,
                 builder: (context, veiculos, _) {
+                  if (veiculos.isEmpty) {
+                    return const Text("Nenhum veículo disponível.");
+                  }
                   return DropdownButtonFormField<String>(
                     value: selected.value,
-                    decoration: const InputDecoration(
-                        labelText: "Selecione o Veículo"),
+                    decoration:
+                        const InputDecoration(labelText: "Selecione o Veículo"),
                     items: veiculos.map((veiculo) {
                       return DropdownMenuItem<String>(
                         value: veiculo.idVeiculo,
-                        child: Text("${veiculo.modelo} (Placa: ${veiculo.placa})"),
+                        child:
+                            Text("${veiculo.modelo} (Placa: ${veiculo.placa})"),
                       );
                     }).toList(),
                     onChanged: (String? novoValor) {

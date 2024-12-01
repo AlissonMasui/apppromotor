@@ -43,13 +43,11 @@ class _ControleKmState extends State<ControleKm> {
       appBar: AppBar(
         title: const Text('Controle kilometragem'),
       ),
-      floatingActionButton:FloatingActionButton(
-            onPressed: () {
-              showFormModal();
-            },
-            child: const Icon(Icons.add),
-
-
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          showFormModal();
+        },
+        child: const Icon(Icons.add),
       ),
       body: isLoading // Verifica se está carregando
           ? const Center(child: CircularProgressIndicator()) // Exibe o loading
@@ -164,7 +162,6 @@ class _ControleKmState extends State<ControleKm> {
                 decoration:
                     const InputDecoration(label: Text("Promotor de vendas")),
               ),
-
               ValueListenableBuilder<List<Veiculo>>(
                 valueListenable: listVeiculos,
                 builder: (context, veiculos, _) {
@@ -195,7 +192,8 @@ class _ControleKmState extends State<ControleKm> {
                           items: veiculos.map((Veiculo veiculo) {
                             return DropdownMenuItem<String>(
                               value: veiculo.idVeiculo,
-                              child: Text(veiculo.modelo+' Placa: '+veiculo.placa ),
+                              child: Text(
+                                  '${veiculo.modelo} Placa: ${veiculo.placa}'),
                             );
                           }).toList(),
                           onChanged: (String? novoValor) {
@@ -239,7 +237,6 @@ class _ControleKmState extends State<ControleKm> {
                 builder: (context, value, ___) {
                   if (value != null) {
                     posicaoController.text =
-
                         "latitude:${value.latitude} longitude: ${value.longitude}";
                   }
                   return TextFormField(

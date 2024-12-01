@@ -2,26 +2,21 @@
 import 'dart:convert';
 
 class AcaoVendas {
+  String idAcaoVendas;
+  String idRevenda;
+  String idPromotor;
+  String dataAcao;
+  String proposito;
+  String? propositosAlcansados;
 
-String idAcaoVendas;
-String idRevenda;
-String idPromotor;
-String dataAcao;
-String proposito;
-String? propositosAlcansados;
-
-AcaoVendas({
-  required this.idAcaoVendas,
-  required this.idRevenda,
-  required this.idPromotor,
-  required this.dataAcao,
-  required this.proposito,
-  this.propositosAlcansados,
-}
-);
-
-
-
+  AcaoVendas({
+    required this.idAcaoVendas,
+    required this.idRevenda,
+    required this.idPromotor,
+    required this.dataAcao,
+    required this.proposito,
+    this.propositosAlcansados,
+  });
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
@@ -40,12 +35,15 @@ AcaoVendas({
       idRevenda: map['id_revenda'] as String,
       idPromotor: map['id_promotor'] as String,
       dataAcao: map['dataAcao'] as String,
-      proposito: map['Proposito'] as String ,
-      propositosAlcansados: map['Propositos_alcansados'] != null ? map['Propositos_alcansados'] as String : null,
+      proposito: map['Proposito'] as String,
+      propositosAlcansados: map['Propositos_alcansados'] != null
+          ? map['Propositos_alcansados'] as String
+          : null,
     );
   }
 
   String toJson() => json.encode(toMap());
 
-  factory AcaoVendas.fromJson(String source) => AcaoVendas.fromMap(json.decode(source) as Map<String, dynamic>);
+  factory AcaoVendas.fromJson(String source) =>
+      AcaoVendas.fromMap(json.decode(source) as Map<String, dynamic>);
 }
