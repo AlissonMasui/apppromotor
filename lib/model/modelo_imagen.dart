@@ -1,41 +1,41 @@
-class Imagens {
-  String id_imagen ;
-  String id_origen ;
+import 'dart:convert';
+
+class Imagen {
+
+  String idImagen;
+  String idVinculo;
+  String data;
   String url;
-  String data ;
 
+  Imagen({
+    required this.idImagen,
+    required this.idVinculo,
+    required this.data,
+    required this.url,
 
-  Imagens({
-   required this.id_imagen;
-   required this.id_origen;
-   required this.url;
-   required this.data;
-   });
-
-Map<String, dynamic> toMap(){
-  return <String, dynamic>{
-    'id_imagen' : id_imagen,
-    'id_origen' : id_origen,
-    'url' : url,
-    'data': data,
-
-  }
-}
-
+  });
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
-      'id_veiculo': idVeiculo,
-      'modelo': modelo,
-      'marca': marca,
-      'placa': placa,
-      'revisao': revisao,
-      'kmAtual': kmAtual,
+      'idImagen': idImagen,
+      'idVinculo': idVinculo,
+      'data': data,
+      'url': url,
     };
   }
 
+  factory Imagen.fromMap(Map<String, dynamic> map) {
+    return Imagen(
+      idImagen: map['idImagen'] as String,
+      idVinculo: map['idVinculo'] as String,
+      data: map['data'] as String,
+      url: map['url'] as String,
+      );
+  }
 
+  String toJson() => json.encode(toMap());
 
-
+  factory Imagen.fromJson(String source) =>
+      Imagen.fromMap(json.decode(source) as Map<String, dynamic>);
 
 }

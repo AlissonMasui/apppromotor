@@ -97,8 +97,12 @@ class _DiarioDeCampoState extends State<DiarioDeCampo> {
                             children: [
                               const Text("Titulo:",
                                   style: TextStyle(fontSize: 24.0)),
-                              Text(diarioM.titulo,
-                                  style: const TextStyle(fontSize: 24.0)),
+                              Expanded(
+                                child: Text(
+                                    overflow: TextOverflow.ellipsis,
+                                    diarioM.titulo,
+                                    style: const TextStyle(fontSize: 24.0)),
+                              ),
                             ],
                           ),
                           subtitle: Row(

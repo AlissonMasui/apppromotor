@@ -85,8 +85,12 @@ class _ControleRevendaState extends State<ControleAcaoVendas> {
                         children: [
                           const Text("Revenda :",
                               style: TextStyle(fontSize: 24.0)),
-                          Text(acaoVendasM.idRevenda,
-                              style: const TextStyle(fontSize: 24.0)),
+                          Expanded(
+                            child: Text(
+                                overflow: TextOverflow.ellipsis,
+                                acaoVendasM.idRevenda,
+                                style: const TextStyle(fontSize: 24.0)),
+                          ),
                         ],
                       ),
                       subtitle: Row(
